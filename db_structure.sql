@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS student_event_management;
 USE student_event_management;
 
 -- Users Table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE users (
 );
 
 -- Events Table
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
     event_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(200) NOT NULL,
     description TEXT,
@@ -28,7 +28,7 @@ CREATE TABLE events (
 );
 
 -- Registrations Table
-CREATE TABLE registrations (
+CREATE TABLE IF NOT EXISTS registrations (
     reg_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     event_id INT NOT NULL,
@@ -43,22 +43,25 @@ CREATE TABLE registrations (
 
 -- Insert Sample Admin User (password: admin123)
 INSERT INTO users (name, email, password, role) VALUES
-('Admin User', 'admin@university.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
-
--- Insert Sample Events
-INSERT INTO events (title, description, date, time, venue, organizer, capacity, created_by) VALUES
-('Web Development Workshop', 'Learn HTML, CSS, JavaScript and modern web frameworks', '2025-11-20', '10:00:00', 'Computer Lab A', 'CS Department', 40, 1),
-('Hackathon 2025', '24-hour coding competition with amazing prizes', '2025-11-25', '09:00:00', 'Main Auditorium', 'Tech Club', 100, 1),
-('AI & Machine Learning Seminar', 'Industry experts discuss latest trends in AI', '2025-12-05', '14:00:00', 'Lecture Hall 2', 'AI Research Lab', 60, 1),
-('Career Fair', 'Meet top employers and explore job opportunities', '2025-12-10', '11:00:00', 'Student Center', 'Career Services', 200, 1);
+('Admin User', 'admin@university.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin')
+ON DUPLICATE KEY UPDATE name=VALUES(name);
 
 -- Insert Sample Student Users (password: student123)
 INSERT INTO users (name, email, password, role) VALUES
 ('John Smith', 'john@student.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-('Sarah Johnson', 'sarah@student.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student');
+('Sarah Johnson', 'sarah@student.edu', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student')
+ON DUPLICATE KEY UPDATE name=VALUES(name);
+
+-- Insert Sample Events (using dynamic dates so they are always upcoming)
+INSERT INTO events (title, description, date, time, venue, organizer, capacity, created_by) VALUES
+('Web Development Workshop', 'Learn HTML, CSS, JavaScript and modern web frameworks hands-on.', DATE_ADD(CURDATE(), INTERVAL 7 DAY), '10:00:00', 'Computer Lab A', 'IT Department', 40, 1),
+('Hackathon 2026', '24-hour coding competition with exciting prizes and industry mentors.', DATE_ADD(CURDATE(), INTERVAL 14 DAY), '09:00:00', 'Main Auditorium', 'Tech Club', 100, 1),
+('AI & Machine Learning Seminar', 'Industry experts discuss latest trends in Generative AI and Data Science.', DATE_ADD(CURDATE(), INTERVAL 21 DAY), '14:00:00', 'Lecture Hall 2', 'AI Research Lab', 60, 1),
+('University Career Fair', 'Meet top tech employers, submit CVs, and explore internship opportunities.', DATE_ADD(CURDATE(), INTERVAL 30 DAY), '11:00:00', 'Student Center', 'Career Guidance Unit', 200, 1);
 
 -- Insert Sample Registrations
 INSERT INTO registrations (user_id, event_id, student_id, contact_number) VALUES
-(2, 1, 'STU2023001', '555-0101'),
-(3, 1, 'STU2023002', '555-0102'),
-(2, 2, 'STU2023001', '555-0101');
+(2, 1, 'STU2024001', '0771234567'),
+(3, 1, 'STU2024002', '0772345678'),
+(2, 2, 'STU2024001', '0771234567')
+ON DUPLICATE KEY UPDATE contact_number=VALUES(contact_number);
